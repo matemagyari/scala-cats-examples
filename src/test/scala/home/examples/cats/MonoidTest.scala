@@ -4,7 +4,7 @@ import cats.Monoid
 import org.scalatest.{FlatSpec, Matchers}
 import scala.collection.immutable.Seq
 
-class MonoidExamplesTest extends FlatSpec with Matchers {
+class MonoidTest extends FlatSpec with Matchers {
 
   "Simple monoid" should "work" in {
 

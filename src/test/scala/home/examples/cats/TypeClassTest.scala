@@ -2,7 +2,7 @@ package home.examples.cats
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class TypeClassExamplesTest extends FlatSpec with Matchers {
+class TypeClassTest extends FlatSpec with Matchers {
 
   trait Show[A] {
     def show(value: A): String

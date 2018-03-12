@@ -6,7 +6,7 @@ import cats.instances.int._ // for Show
 import cats.instances.string._ // for Show
 import cats.syntax.show._ // for show
 
-class ShowExamplesTest extends FlatSpec with Matchers {
+class ShowTest extends FlatSpec with Matchers {
 
   final case class Cat(name: String, age: Int)
 

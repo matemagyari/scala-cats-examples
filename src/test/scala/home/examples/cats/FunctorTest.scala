@@ -4,7 +4,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 import scala.collection.immutable.Seq
 
-class FunctorExamplesTest extends FlatSpec with Matchers {
+class FunctorTest extends FlatSpec with Matchers {
 
   "Creating a functor" should "work" in {
 

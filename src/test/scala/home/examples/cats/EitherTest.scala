@@ -4,7 +4,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 import scala.collection.immutable.Seq
 
-class EitherExamplesTest extends FlatSpec with Matchers {
+class EitherTest extends FlatSpec with Matchers {
 
   "Creating an either instance" should "work" in {
 
@@ -17,6 +17,18 @@ class EitherExamplesTest extends FlatSpec with Matchers {
     "hey".asLeft[Int] shouldBe a[Either[String, Int]]
 
     "hey".asLeft[Int].recover { case x ⇒ -1 } shouldBe Right(-1)
+  }
+
+  "CatchOnly" should "look like" in {
+    import cats.syntax.either._ // for catchOnly
+
+    def parseInt(str: String): Either[String, Int] =
+      Either
+        .catchOnly[NumberFormatException](str.toInt)
+        .leftMap(_ ⇒ s"can't read [$str]")
+
+    parseInt("a") shouldBe Left("can't read [a]")
+
   }
 
 }

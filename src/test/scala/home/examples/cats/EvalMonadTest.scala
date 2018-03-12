@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import cats.Eval
 import org.scalatest.{FlatSpec, Matchers}
 
-class EvalExamplesTest extends FlatSpec with Matchers {
+class EvalMonadTest extends FlatSpec with Matchers {
 
   "Eval" should "work" in {
 

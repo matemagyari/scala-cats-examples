@@ -2,7 +2,7 @@ package home.examples.cats
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class MonadErrorExamplesTest extends FlatSpec with Matchers {
+class MonadErrorTest extends FlatSpec with Matchers {
 
   "MonadError" should "work" in {
 
