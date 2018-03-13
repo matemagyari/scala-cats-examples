@@ -2,8 +2,6 @@ package home.examples.cats
 
 import org.scalatest.{FlatSpec, Matchers}
 
-import scala.collection.immutable.Seq
-
 class EitherTest extends FlatSpec with Matchers {
 
   "Creating an either instance" should "work" in {
