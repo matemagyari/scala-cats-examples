@@ -2,7 +2,6 @@ package home.examples.cats
 
 import org.scalatest.{FlatSpec, Matchers}
 
-import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
