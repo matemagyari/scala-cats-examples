@@ -29,6 +29,16 @@ class TypeClassTest extends FlatSpec with Matchers {
     Show.show(false) shouldBe "False"
   }
 
+  it should "work with implicitly" in {
+    object Show {
+      def show[A: Show](a: A) = implicitly[Show[A]].show(a)
+    }
+    import ShowInstances._
+    Show.show(1) shouldBe "1"
+    Show.show(true) shouldBe "True"
+
+  }
+
   it should "work with Interface Syntax" in {
 
     object ShowSyntax {

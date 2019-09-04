@@ -18,10 +18,12 @@ class KleisliTest extends FlatSpec with Matchers {
     import cats.instances.option._ // for Monad
 
     val func2: String ⇒ Option[Double] = Kleisli(parseInt) andThen Kleisli(reciprocal) run
+
     //simple way
     def func(s: String): Option[Double] = parseInt(s).flatMap(reciprocal)
 
-    func("50") shouldBe func2("50")
+    func("5") shouldBe func2("5")
+    func("5") shouldBe Some(0.2)
 
   }
 

@@ -150,4 +150,18 @@ class MonadTest extends FlatSpec with Matchers {
 
   }
 
+  "Monad" should "have ifM" in {
+
+    import cats._
+    import cats.implicits._
+
+    Monad[Option].ifM(Option(true))(Option("truthy"), Option("falsy")) should be(
+      Some("truthy")
+    )
+
+    Monad[List].ifM(List(true, false, true))(List(1, 2), List(3, 4)) should be(
+      List(1, 2, 3, 4, 1, 2))
+
+  }
+
 }

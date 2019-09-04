@@ -32,14 +32,14 @@ class EvalMonadTest extends FlatSpec with Matchers {
     x2.get() shouldBe 0
     x3.get() shouldBe 0
 
-    e2.value
+    e2.value //invoke
     x2.get() shouldBe 1
-    e2.value
+    e2.value //invoke
     x2.get() shouldBe 1
 
-    e3.value
+    e3.value //invoke
     x3.get() shouldBe 1
-    e3.value
+    e3.value //invoke
     x3.get() shouldBe 2
 
   }

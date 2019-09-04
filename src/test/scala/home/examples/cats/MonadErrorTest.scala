@@ -15,7 +15,7 @@ class MonadErrorTest extends FlatSpec with Matchers {
     monadError.pure("hey") shouldBe an[ErrorOr[Int]]
     monadError.pure("hey") shouldBe Right("hey")
 
-    val failure = monadError.raiseError("Badness")
+    val failure: ErrorOr[Nothing] = monadError.raiseError("Badness")
     failure shouldBe an[ErrorOr[Nothing]]
     failure shouldBe Left("Badness")
 

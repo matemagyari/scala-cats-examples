@@ -6,6 +6,45 @@ import scala.collection.immutable.Seq
 
 class FunctorTest extends FlatSpec with Matchers {
 
+  "Basic examples" should "work" in {
+    import cats.Functor
+    import cats.implicits._
+
+    Functor[Option].map(Option("Hello"))(_.length) shouldBe Option(5)
+    Functor[Option].map(None: Option[String])(_.length) shouldBe None
+  }
+
+  "Functors" should "compose" in {
+    import cats.Functor
+    import cats.implicits._
+    val listOpt = Functor[List] compose Functor[Option]
+    val list = List(Some(1), None, Some(3))
+    listOpt.map(list)(_ + 1) shouldBe List(Some(2), None, Some(4))
+  }
+
+  "Lift" should "work" in {
+    import cats.Functor
+    import cats.implicits._
+
+    val lenOption: Option[String] ⇒ Option[Int] = Functor[Option].lift(_.length)
+    lenOption(Some("Hello")) shouldBe Some(5)
+  }
+
+  "Fproduct" should "work" in {
+    import cats.Functor
+    import cats.implicits._
+
+    val source = List("Cats", "is", "awesome")
+    val product: Map[String, Int] = {
+      val tuples: Seq[(String, Int)] = Functor[List].fproduct(source)(_.length)
+      tuples.toMap
+    }
+
+    product.get("Cats").getOrElse(0) shouldBe 4
+    product.get("is").getOrElse(0) shouldBe 2
+    product.get("awesome").getOrElse(0) shouldBe 7
+  }
+
   "Creating a functor" should "work" in {
 
     trait Functor[F[_]] {
@@ -13,7 +52,7 @@ class FunctorTest extends FlatSpec with Matchers {
     }
 
     val SeqFunctor = new Functor[Seq] {
-      override def map[A, B](fa: Seq[A])(f: A ⇒ B) =
+      override def map[A, B](fa: Seq[A])(f: A ⇒ B): Seq[B] =
         fa.map(f)
     }
 
@@ -37,6 +76,7 @@ class FunctorTest extends FlatSpec with Matchers {
   }
 
   "Functor" should "work on Tree" in {
+
     sealed trait Tree[+A]
     final case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A]
     final case class Leaf[A](value: A) extends Tree[A]
