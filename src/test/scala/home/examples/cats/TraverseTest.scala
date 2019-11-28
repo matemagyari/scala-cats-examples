@@ -1,6 +1,8 @@
 package home.examples.cats
 
 import cats.Applicative
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.time.{Seconds, Span}
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -8,25 +10,30 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.collection.immutable.Seq
+import scala.util.Try
 
-class TraverseTest extends FlatSpec with Matchers {
+class TraverseTest extends FlatSpec with Matchers with ScalaFutures {
+
+  override implicit val patienceConfig = PatienceConfig(Span(2, Seconds))
 
   "General traverse" should "look like this" in {
-    trait Traverse[F[_]] {
-      def traverse[G[_]: Applicative, A, B](fa: F[A])(f: A => G[B]): G[F[B]]
+
+    def traverse[F[_]: Applicative, A, B](as: List[A])(f: A ⇒ F[B]): F[List[B]] = {
+      as.foldRight(Applicative[F].pure(List.empty[B])) { (a: A, acc: F[List[B]]) ⇒
+        val fb: F[B] = f(a)
+        Applicative[F].map2(fb, acc)(_ :: _)
+      }
     }
 
-    //e.g. F=List, G=Option
+    def toEven(s: String): Option[Int] = {
+      val i = s.toInt
+      if (i % 2 == 0) Some(i) else None
+    }
 
-//    trait Traverse2 {
-//      def traverse[A, B](fa: List[A])(f: A => Option[B]): Option[List[B]] = {
-//        val emptyList = List.empty[B]
-//        fa.foldLeft(None: Option[List[B]]) { (acc, a) ⇒
-//          acc
-//          f(a)
-//        }
-//      }
-//    }
+    import cats.instances.option._
+    traverse(List("1", "2", "3"))(toEven) shouldBe None
+    traverse(List("2", "4"))(toEven) shouldBe Some(List(2, 4))
+
   }
 
   "Custom Future traverse implementation" should "look like this" in {
@@ -38,9 +45,7 @@ class TraverseTest extends FlatSpec with Matchers {
         } yield bs :+ futureElement
       }
 
-    val result: Future[Seq[Int]] = traverse(Seq(1, 2, 3))(x ⇒ Future(x))
-
-    await(result) shouldBe Seq(1, 2, 3)
+    traverse(Seq(1, 2, 3))(x ⇒ Future(x)).futureValue shouldBe Seq(1, 2, 3)
   }
 
   "abc" should "def" in {

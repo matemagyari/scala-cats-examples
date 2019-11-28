@@ -1,6 +1,8 @@
 package home.examples.cats
 
 import cats.Applicative
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.collection.immutable.Seq
@@ -11,7 +13,9 @@ import scala.collection.immutable.Seq
   * If we view Functor as the ability to work with a single effect,
   * Applicative encodes working with multiple independent effects
   */
-class ApplicativeTest extends FlatSpec with Matchers {
+class ApplicativeTest extends FlatSpec with Matchers with ScalaFutures {
+
+  override implicit val patienceConfig = PatienceConfig(Span(2, Seconds))
 
   "Creating an Applicative" should "work" in {
 
@@ -54,6 +58,18 @@ class ApplicativeTest extends FlatSpec with Matchers {
     Applicative[Option].pure(5) shouldBe Some(5)
   }
 
+  "Built-in Applicative" should "handle futures" in {
+
+    import cats.implicits._
+    import scala.concurrent.Future
+    import scala.concurrent.ExecutionContext.Implicits.global
+
+    val f1 = Applicative[Future].pure(1)
+    val f2 = Applicative[Future].pure(2)
+
+    (f1, f2).mapN(_ + _).futureValue shouldBe 3
+  }
+
   "Built-in applicative syntax" should "work" in {
 
     import cats.implicits._
@@ -68,7 +84,9 @@ class ApplicativeTest extends FlatSpec with Matchers {
 
     import cats.implicits._
 
-    (Applicative[List] compose Applicative[Option]).pure(1) should be(List(Some(1)))
+    val composedApp = Applicative[List] compose Applicative[Option]
+    composedApp.pure(1) should be(List(Some(1)))
+    composedApp.map(List(Some(1)))(_ + 1) should be(List(Some(2)))
   }
 
   "Cartesian syntax" should "work" in {
@@ -85,9 +103,6 @@ class ApplicativeTest extends FlatSpec with Matchers {
       import cats.instances.option._
       Option(1) |+| Option(2) shouldBe Some(3)
     }
-
-    //Applicative[Future].pure(1) |+| Applicative[Future].pure(2)
-
   }
 
 }

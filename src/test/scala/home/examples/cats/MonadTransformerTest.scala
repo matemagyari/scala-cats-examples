@@ -52,6 +52,41 @@ class MonadTransformerTest extends FlatSpec with Matchers {
 
   }
 
+  "Transforming" should "look like this 3" in {
+
+    import cats.data.{OptionT}
+    import cats.instances.future._
+
+    import scala.concurrent.ExecutionContext.Implicits.global
+    import scala.concurrent.Future
+
+    type User = String
+    type Address = String
+
+    def findUserById(id: Long): Future[Option[User]] = Future.successful(Some("Joe"))
+    def findAddressByUser(user: User): Future[Option[Address]] =
+      Future.successful(Some("Piccadilly"))
+
+    //Does not compile
+//    for {
+//      user ← findUserById(1)
+//      address ← findAddressByUser(user)
+//    } yield address
+
+    //Works, but verbose
+    val address: Future[Option[Address]] = findUserById(1).flatMap {
+      case Some(user) ⇒ findAddressByUser(user)
+      case None ⇒ Future.successful(None)
+    }
+
+    //Better
+    val address2: Future[Option[Address]] = (for {
+      user ← OptionT(findUserById(1))
+      address ← OptionT(findAddressByUser(user))
+    } yield address).value
+
+  }
+
   private def await[A](f: Future[A]): A = {
     import scala.concurrent.Await
     import scala.concurrent.duration._

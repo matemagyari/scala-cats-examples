@@ -14,11 +14,13 @@ class FunctorTest extends FlatSpec with Matchers {
     Functor[Option].map(None: Option[String])(_.length) shouldBe None
   }
 
+  // If F and G have Functor instances, then so does F[G[_]]
   "Functors" should "compose" in {
     import cats.Functor
     import cats.implicits._
-    val listOpt = Functor[List] compose Functor[Option]
+
     val list = List(Some(1), None, Some(3))
+    val listOpt = Functor[List] compose Functor[Option]
     listOpt.map(list)(_ + 1) shouldBe List(Some(2), None, Some(4))
   }
 
